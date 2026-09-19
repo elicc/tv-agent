@@ -2,15 +2,15 @@
 
 ## Boundaries
 
-The service will keep four explicit layers:
+The service keeps shallow modules under `src/` while preserving four logical boundaries:
 
 1. `api`: versioned HTTP transport, authentication and request validation.
 2. `application`: metadata-resolution use cases and bounded-loop orchestration.
 3. `domain`: provider-neutral identities, candidates, evidence and decisions.
 4. `infrastructure`: Douban and OpenAI-compatible adapters, persistence and telemetry.
 
-Dependencies point inward. Domain and application code must not import FastAPI, OpenAI or
-provider-specific response classes.
+Dependencies point inward even though the filesystem is intentionally flat. Matching and resolver
+policy must not depend on FastAPI, OpenAI or provider-specific response classes.
 
 ## Resolution policy
 

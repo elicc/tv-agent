@@ -16,11 +16,14 @@ dependencies = [
 ]
 
 [project.scripts]
-tv-agent = "tv_agent.main:run"
+tv-agent = "src.main:run"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
 
 [dependency-groups]
 dev = [
@@ -33,6 +36,7 @@ dev = [
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
@@ -44,4 +48,4 @@ select = ["E", "F", "I", "UP", "B", "ASYNC"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
-packages = ["tv_agent"]
+packages = ["src"]

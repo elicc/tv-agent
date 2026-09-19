@@ -1,14 +1,13 @@
-"""Environment-backed application settings."""
+"""Environment-backed runtime settings."""
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Runtime configuration loaded from ``.env`` and process variables."""
-
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -33,9 +32,14 @@ class Settings(BaseSettings):
     llm_api_key: SecretStr | None = None
     llm_model: str = "deepseek-flash"
     llm_timeout_seconds: float = Field(default=15.0, gt=0, le=60)
+    llm_reasoning_effort: str = "high"
 
     agent_max_rounds: int = Field(default=3, ge=1, le=5)
     agent_max_tool_calls: int = Field(default=5, ge=1, le=10)
+
+    database_path: Path = Path("data/tv-agent.db")
+    matched_cache_ttl_seconds: int = Field(default=30 * 24 * 60 * 60, ge=60)
+    candidate_cache_ttl_seconds: int = Field(default=24 * 60 * 60, ge=60)
 
     @property
     def douban_configured(self) -> bool:
@@ -45,8 +49,11 @@ class Settings(BaseSettings):
     def llm_configured(self) -> bool:
         return bool(self.llm_api_key and self.llm_api_key.get_secret_value())
 
+    @property
+    def authentication_enabled(self) -> bool:
+        return bool(self.service_api_key and self.service_api_key.get_secret_value())
+
 
 @lru_cache
 def get_settings() -> Settings:
-    """Return one immutable-by-convention settings instance per process."""
     return Settings()
